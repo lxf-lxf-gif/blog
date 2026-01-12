@@ -305,7 +305,7 @@ ${externalBlacklist.length > 0 ? `* **禁止引用的外部域名：** ${externa
  * AI Service for Gemini Blog Pro
  * Integrated with Advanced Google SEO Prompt Architecture
  */
-export const generateBlogContent = async (apiKey, topic, options, modelName = "gemini-2.5-flash") => {
+export const generateBlogContent = async (apiKey, topic, options, modelName = "gemini-1.5-flash") => {
     if (!apiKey) throw new Error("请先输入 API Key");
 
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -372,7 +372,10 @@ export const generateBlogContent = async (apiKey, topic, options, modelName = "g
             if (kbInlineData.length > 0) {
                 const parts = [{ text: prompt }];
                 kbInlineData.forEach(item => {
-                    parts.push(item);
+                    // REST API 使用 inline_data (snake_case)
+                    parts.push({
+                        inline_data: item.inlineData
+                    });
                 });
                 contents = [{ role: 'user', parts: parts }];
             }
@@ -417,7 +420,7 @@ export const generateBlogContent = async (apiKey, topic, options, modelName = "g
 /**
  * 内容续写功能
  */
-export const continueContent = async (apiKey, existingContent, modelName = "gemini-2.5-flash") => {
+export const continueContent = async (apiKey, existingContent, modelName = "gemini-1.5-flash") => {
     if (!apiKey) throw new Error("请先输入 API Key");
 
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -444,7 +447,7 @@ ${existingContent}
 /**
  * 内容重写功能
  */
-export const rewriteContent = async (apiKey, content, style = "professional", modelName = "gemini-2.5-flash") => {
+export const rewriteContent = async (apiKey, content, style = "professional", modelName = "gemini-1.5-flash") => {
     if (!apiKey) throw new Error("请先输入 API Key");
 
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -477,7 +480,7 @@ ${content}
 /**
  * 流式输出生成博客内容
  */
-export const generateBlogContentStream = async (apiKey, topic, options, modelName = "gemini-2.5-flash", onChunk) => {
+export const generateBlogContentStream = async (apiKey, topic, options, modelName = "gemini-1.5-flash", onChunk) => {
     // -----------------------------------------------------------
     // STREAMING IMPLEMENTATION (Cross-Platform)
     // -----------------------------------------------------------
@@ -524,7 +527,12 @@ export const generateBlogContentStream = async (apiKey, topic, options, modelNam
             let contents = [{ role: 'user', parts: [{ text: prompt }] }];
             if (kbInlineData.length > 0) {
                 const parts = [{ text: prompt }];
-                kbInlineData.forEach(item => { parts.push(item); });
+                kbInlineData.forEach(item => {
+                    // REST API 使用 inline_data (snake_case)
+                    parts.push({
+                        inline_data: item.inlineData
+                    });
+                });
                 contents = [{ role: 'user', parts: parts }];
             }
 
@@ -595,7 +603,7 @@ export const generateBlogContentStream = async (apiKey, topic, options, modelNam
  * 语义关键词扩展功能
  * 使用 AI 自动发现与输入关键词语义相关的词汇
  */
-export const expandKeywords = async (apiKey, keywords, blogTheme = '', modelName = "gemini-2.5-flash") => {
+export const expandKeywords = async (apiKey, keywords, blogTheme = '', modelName = "gemini-1.5-flash") => {
     if (!apiKey) throw new Error("请先输入 API Key");
     if (!keywords || keywords.trim() === '') throw new Error("请先输入关键词");
 
@@ -739,7 +747,7 @@ ${blogTheme ? `- **主题背景**: ${blogTheme}` : ''}
 /**
  * 智能分析用户输入，提取主题和关键词
  */
-export const analyzeTopicIntent = async (apiKey, userInput, modelName = "gemini-2.5-flash") => {
+export const analyzeTopicIntent = async (apiKey, userInput, modelName = "gemini-1.5-flash") => {
     if (!apiKey) throw new Error("请先输入 API Key");
 
     // 如果输入非常短，直接作为主题

@@ -57,10 +57,10 @@ function App() {
     const saved = getPreferences().selectedModel;
     // 自动重置旧的模型名称
     if (saved === 'gemini-1.5-pro' || saved === 'gemini-1.5-flash' || saved === 'gemini-pro') {
-      localStorage.setItem('selectedModel', 'gemini-2.5-flash');
-      return 'gemini-2.5-flash';
+      localStorage.setItem('selectedModel', 'gemini-1.5-flash');
+      return 'gemini-1.5-flash';
     }
-    return saved || 'gemini-2.5-flash';
+    return saved || 'gemini-1.5-flash';
   });
   const [customModelName, setCustomModelName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -630,18 +630,10 @@ function App() {
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
             >
-              <option value="gemini-2.5-flash">Gemini 2.5 Flash (默认)</option>
-              <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (轻量级)</option>
-              <option value="gemini-2.5-pro">Gemini 2.5 Pro (旗舰版)</option>
-              <option value="gemini-3-flash-preview">Gemini 3 Flash (预览版)</option>
-              <option value="gemini-2.5-flash-tts">Gemini 2.5 Flash TTS</option>
-              <option value="gemma-3-27b-it">Gemma 3 27B (Instruct)</option>
-              <option value="gemma-3-12b-it">Gemma 3 12B (Instruct)</option>
-              <option value="gemma-3-4b-it">Gemma 3 4B (Instruct)</option>
-              <option value="gemma-3-2b-it">Gemma 3 2B (Instruct)</option>
-              <option value="gemma-3-1b-it">Gemma 3 1B (Instruct)</option>
-              <option value="gemini-2.5-flash-native-audio-dialog">Gemini 2.5 Native Audio</option>
-              <option value="gemini-robotics-er-1.5-preview">Gemini Robotics ER 1.5</option>
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash (默认)</option>
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro (高性能)</option>
+              <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (实验版)</option>
+              <option value="gemini-pro">Gemini 1.0 Pro (经典版)</option>
               <option value="custom">-- 自定义模型名称 --</option>
             </select>
           </div>
