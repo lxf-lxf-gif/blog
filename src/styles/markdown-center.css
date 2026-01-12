@@ -1,0 +1,256 @@
+﻿/* Mermaid Charts - 支持多种图表类型 */
+.mermaid-chart {
+  margin: 24px auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  overflow: visible;
+  width: 100%;
+  max-width: 900px;
+  min-height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mermaid-chart svg {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+}
+
+/* 饼图 - 保持平衡但允许更大显示 */
+.mermaid-chart svg[aria-roledescription="pie"] {
+  max-width: 800px !important;
+  width: 100% !important;
+}
+
+/* 时序图、甘特图等自适应 - 取消严格宽度限制 */
+.mermaid-chart svg[aria-roledescription="gantt"],
+.mermaid-chart svg[aria-roledescription="state"],
+.mermaid-chart svg[aria-roledescription="er"] {
+  max-width: 100% !important;
+  width: 100% !important;
+  height: auto !important;
+  /* 关键：甘特图高度随内容缩放 */
+}
+
+/* 提高整体可见性，允许横向撑满 */
+.editor-container {
+  width: 100%;
+}
+
+/* 强制流程图节点文字设置深色 - 因为节点背景现在是白色 */
+.mermaid-chart svg:not([aria-roledescription="pie"]) .node text,
+.mermaid-chart svg:not([aria-roledescription="pie"]) .nodeLabel,
+.mermaid-chart svg:not([aria-roledescription="pie"]) .label,
+.mermaid-chart svg:not([aria-roledescription="pie"]) .label div,
+.mermaid-chart svg:not([aria-roledescription="pie"]) .label span,
+.mermaid-chart svg:not([aria-roledescription="pie"]) foreignObject,
+.mermaid-chart svg:not([aria-roledescription="pie"]) foreignObject div,
+.mermaid-chart svg:not([aria-roledescription="pie"]) foreignObject span,
+.mermaid-chart svg:not([aria-roledescription="pie"]) .node rect+text,
+.mermaid-chart svg:not([aria-roledescription="pie"]) [class*="node"] text,
+.mermaid-chart svg:not([aria-roledescription="pie"]) [class*="node"] div,
+.mermaid-chart svg:not([aria-roledescription="pie"]) [class*="node"] span {
+  fill: #1e293b !important;
+  color: #1e293b !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+/* 针对 HTML 标签的特别覆盖 */
+.mermaid-chart [id^="mermaid-"] .node div,
+.mermaid-chart [id^="mermaid-"] .node span,
+.mermaid-chart [id^="mermaid-"] .label div,
+.mermaid-chart [id^="mermaid-"] foreignObject div {
+  color: #1e293b !important;
+  fill: #1e293b !important;
+}
+
+/* 甘特图样式 */
+.mermaid-chart .task {
+  fill: #6366f1 !important;
+  stroke: #4f46e5 !important;
+}
+
+.mermaid-chart .taskText {
+  fill: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.mermaid-chart .grid .tick text {
+  fill: #64748b !important;
+  font-size: 12px !important;
+}
+
+/* 状态图样式 */
+.mermaid-chart .state rect,
+.mermaid-chart .state circle {
+  fill: #6366f1 !important;
+  stroke: #4f46e5 !important;
+}
+
+/* ER图样式 */
+.mermaid-chart .er.entityBox {
+  fill: #6366f1 !important;
+  stroke: #4f46e5 !important;
+}
+
+.mermaid-chart .er.attributeBoxEven,
+.mermaid-chart .er.attributeBoxOdd {
+  fill: #f1f5f9 !important;
+  stroke: #cbd5e1 !important;
+}
+
+/* 流程图边标签保持深色 */
+.mermaid-chart .edgeLabel,
+.mermaid-chart .edgeLabel text,
+.mermaid-chart .edgeLabel span,
+.mermaid-chart .edgeLabel foreignObject,
+.mermaid-chart .edgeLabel foreignObject div {
+  fill: #1e293b !important;
+  color: #1e293b !important;
+  background: #ffffff !important;
+}
+
+/* 节点样式 */
+.mermaid-chart .node rect,
+.mermaid-chart .node polygon,
+.mermaid-chart .node circle,
+.mermaid-chart .node ellipse {
+  rx: 6px !important;
+  ry: 6px !important;
+  stroke-width: 2px !important;
+}
+
+/* 饼图标题和图例保持深色 */
+.mermaid-chart svg[aria-roledescription="pie"] .pieTitleText,
+.mermaid-chart svg[aria-roledescription="pie"] .legend text {
+  fill: #1e293b !important;
+  color: #1e293b !important;
+}
+
+/* 饼图扇区内文字保持白色 */
+.mermaid-chart svg[aria-roledescription="pie"] .pieCircle text {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
+/* 图表后的说明文字居中 */
+.mermaid-chart+p {
+  text-align: center !important;
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+/* 图片居中 */
+.content-display img {
+  display: block;
+  margin: 24px auto;
+  max-width: 100%;
+  border-radius: 12px;
+}
+
+/* 图片说明文字居中 */
+.content-display em,
+.content-display p em {
+  display: block;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* 包含图片的段落居中 */
+.content-display p:has(img) {
+  text-align: center;
+}
+
+.content-display p:has(img)+p {
+  text-align: center;
+}
+
+/* 图表容器后的段落居中 */
+.content-display .mermaid-chart+p,
+.content-display .mermaid-error+p {
+  text-align: center !important;
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+/* 表格居中 */
+.content-display .markdown-table {
+  max-width: 900px;
+  margin: 24px auto;
+  border-collapse: collapse;
+  background: var(--glass-bg);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.content-display .markdown-table thead {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+  border-bottom: 2px solid var(--primary);
+}
+
+.content-display .markdown-table th {
+  padding: 14px 18px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.content-display .markdown-table td {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.content-display .markdown-table tbody tr:hover {
+  background: var(--hover-bg);
+  transition: background 0.2s ease;
+}
+
+.content-display .markdown-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* 表格后的说明文字居中 */
+.content-display .markdown-table+p {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+/* 内部锚文本链接高亮 */
+.content-display a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.content-display a:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(168, 85, 247, 0.25));
+  border-color: rgba(99, 102, 241, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.content-display a:active {
+  transform: translateY(0);
+}

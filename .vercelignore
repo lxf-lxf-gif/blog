@@ -1,0 +1,7 @@
+# Vercel deployment ignore patterns
+node_modules
+release
+electron
+*.log
+.vscode
+.idea
