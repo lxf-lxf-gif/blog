@@ -64,110 +64,93 @@ mermaid.initialize({
 
 /**
  * Mermaid 图表组件
+ * 使用 React.memo 减少流式输出时的重绘压力
  */
-export const MermaidChart = ({ chart }) => {
+export const MermaidChart = React.memo(({ chart }) => {
     const [svg, setSvg] = React.useState('');
-    const [error, setError] = React.useState('');
+    const [isRendering, setIsRendering] = React.useState(false);
 
     useEffect(() => {
         const renderChart = async () => {
+            // 如果图表代码不完整（ streaming 过程中），不进行渲染，显示占位
+            if (!chart || chart.trim().length < 10) return;
+
+            setIsRendering(true);
             try {
                 // 清理图表代码并强制横向布局
                 let cleanChart = chart.trim();
 
+                // 移除流式生成过程中可能出现的各种 Markdown 闭合干扰
+                cleanChart = cleanChart.replace(/```mermaid/g, '').replace(/```/g, '');
+
                 // 移除可能导致解析错误的特殊字符
-                // 替换不支持的箭头符号
                 cleanChart = cleanChart.replace(/\->\^</g, '-->');
                 cleanChart = cleanChart.replace(/\^</g, '');
                 cleanChart = cleanChart.replace(/\-\^/g, '--');
+                cleanChart = cleanChart.replace(/[\u200B-\u200D\uFEFF]/g, '');
 
-                // 清理其他可能的问题字符
-                cleanChart = cleanChart.replace(/[\u200B-\u200D\uFEFF]/g, ''); // 零宽字符
-
-                // 修复常见的 bar chart 语法错误 - 移除由于限制过严导致的误判逻辑
-                // 让 Mermaid 自行处理语法校验
-
-                // 特殊修复：XY Chart 的 x-axis 列表项必须加引号
-                // 处理类似 [室温, 200°C] 这种未加引号导致解析失败的情况
-                // 兼容性修复：强制使用 xychart-beta 以确保兼容性
+                // 特殊修复：XY Chart
                 if (cleanChart.includes('xychart')) {
                     if (!cleanChart.includes('xychart-beta')) {
                         cleanChart = cleanChart.replace('xychart', 'xychart-beta');
                     }
-
                     cleanChart = cleanChart.replace(/x-axis\s*\[(.*?)\]/g, (match, content) => {
                         const parts = content.split(',').map(p => p.trim());
                         const fixedParts = parts.map(p => {
-                            // 如果已经是引号包裹，保持原样；否则添加双引号
-                            if ((p.startsWith('"') && p.endsWith('"')) || (p.startsWith("'") && p.endsWith("'"))) {
-                                return p;
-                            }
+                            if ((p.startsWith('"') && p.endsWith('"')) || (p.startsWith("'") && p.endsWith("'"))) return p;
                             return `"${p}"`;
                         });
                         return `x-axis [${fixedParts.join(', ')}]`;
                     });
                 }
 
-                // 如果是流程图且使用 TD，自动转换为 LR
                 if (cleanChart.includes('graph TD') || cleanChart.includes('flowchart TD')) {
                     cleanChart = cleanChart.replace(/graph TD/g, 'graph LR');
                     cleanChart = cleanChart.replace(/flowchart TD/g, 'flowchart LR');
                 }
 
-                // 生成唯一 ID
                 const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
-
-                // 渲染图表
                 const { svg } = await mermaid.render(id, cleanChart);
                 setSvg(svg);
-                setError('');
             } catch (err) {
-                console.error('Mermaid rendering error:', err);
-                console.error('Chart content:', chart);
-
-                // 更友好的错误提示
-                const errorMessage = err.message || '图表语法错误';
-
-                // 静默处理错误，不显示在界面上（避免干扰用户）
-                console.warn(`图表渲染失败: ${errorMessage}，已跳过显示`);
-                setError(''); // 不显示错误，静默跳过
-                setSvg(''); // 清空 SVG
+                // 流式过程中语法不完整是正常的，不报错
+                console.debug('Mermaid partial render skipped');
+            } finally {
+                setIsRendering(false);
             }
         };
 
-        if (chart) {
-            renderChart();
-        }
+        const timer = setTimeout(renderChart, 100);
+        return () => clearTimeout(timer);
     }, [chart]);
 
-    if (error) {
+    // 加载中或无内容时的占位
+    if (!svg) {
         return (
-            <div className="mermaid-error">
-                <p style={{ color: '#ef4444', padding: '12px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', fontWeight: '600' }}>
-                    ⚠️ {error}
-                </p>
-                <details style={{ marginTop: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>
-                    <summary style={{ cursor: 'pointer', fontWeight: '600' }}>查看原始代码</summary>
-                    <pre style={{ background: 'var(--glass-bg)', padding: '12px', borderRadius: '8px', marginTop: '8px', fontSize: '13px' }}>
-                        {chart}
-                    </pre>
-                </details>
+            <div className="mermaid-placeholder" style={{
+                padding: '20px',
+                margin: '16px 0',
+                background: 'var(--bg-card)',
+                border: '1px dashed var(--border-subtle)',
+                borderRadius: '12px',
+                textAlign: 'center',
+                color: 'var(--text-muted)',
+                fontSize: '0.9rem'
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <div className="spinner" style={{ width: '16px', height: '16px', border: '2px solid var(--accent-primary)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                    <span>{isRendering ? '正在生成智能力图表...' : '等待图表数据完整...'}</span>
+                </div>
             </div>
         );
     }
 
-    // 如果没有 SVG 内容，不渲染任何内容（静默跳过）
-    if (!svg) {
-        return null;
-    }
-
-    // 检测是否为 XY Chart 以应用特定样式
     const isXY = chart && (chart.includes('xychart') || chart.includes('xychart-beta'));
 
     return (
         <div className={`mermaid-chart mermaid-enhanced ${isXY ? 'mermaid-xy' : ''}`} dangerouslySetInnerHTML={{ __html: svg }} />
     );
-};
+});
 
 /**
  * 增强的 Markdown 渲染器，支持 Mermaid 图表和 GFM 表格
